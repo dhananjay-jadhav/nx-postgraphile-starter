@@ -4,6 +4,8 @@
  * Custom library generator that wraps Nx's @nx/js:lib generator
  * and automatically adds path mappings to tsconfig.json
  *
+ * Note: webpack.config.js auto-discovers libs via getLibAliases()
+ *
  * Usage: node scripts/generate-lib.js <lib-name>
  * Example: node scripts/generate-lib.js my-new-lib
  */
@@ -59,11 +61,12 @@ const pathMapping = `libs/${libName}/src/index.ts`;
 if (!tsconfig.compilerOptions.paths[importPath]) {
     tsconfig.compilerOptions.paths[importPath] = [pathMapping];
     writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4) + '\n');
-    console.log(`\n✅ Added path mapping: "${importPath}" -> "${pathMapping}"`);
+    console.log(`\n✅ Added path mapping to tsconfig.json: "${importPath}" -> "${pathMapping}"`);
 } else {
-    console.log(`\n⚠️  Path mapping for "${importPath}" already exists`);
+    console.log(`\n⚠️  Path mapping for "${importPath}" already exists in tsconfig.json`);
 }
 
 console.log(`\n🎉 Library ${importPath} created successfully!\n`);
-console.log('You can now import from it:');
+console.log('Webpack aliases are auto-discovered - no manual config needed.');
+console.log(`\nYou can now import from it:`);
 console.log(`  import { ... } from '${importPath}';\n`);

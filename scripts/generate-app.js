@@ -2,7 +2,7 @@
 
 /**
  * Custom app generator that wraps Nx's @nx/node:application generator
- * and automatically configures webpack with shared path resolution
+ * and automatically configures webpack with dynamic lib alias resolution
  *
  * Usage: node scripts/generate-app.js <app-name>
  * Example: node scripts/generate-app.js my-new-api
@@ -41,14 +41,28 @@ try {
     process.exit(1);
 }
 
-// Update webpack config with shared configuration
+// Create webpack config using shared lib-aliases utility
 const webpackConfigPath = join(__dirname, '..', directory, 'webpack.config.js');
 const webpackConfig = `const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { getResolveConfig, getOutputConfig } = require('../../tools/webpack/shared-config');
+const nodeExternals = require('webpack-node-externals');
+const { join } = require('path');
+const { getLibAliases } = require('../../tools/webpack/lib-aliases');
+
+const workspaceRoot = join(__dirname, '../..');
 
 module.exports = {
-    output: getOutputConfig(__dirname),
-    resolve: getResolveConfig(__dirname),
+    output: {
+        path: join(__dirname, 'dist'),
+        clean: true,
+    },
+    resolve: {
+        alias: getLibAliases(workspaceRoot),
+    },
+    externals: [
+        nodeExternals({
+            allowlist: [/^@app\\//],
+        }),
+    ],
     plugins: [
         new NxAppWebpackPlugin({
             target: 'node',
@@ -60,13 +74,14 @@ module.exports = {
             outputHashing: 'none',
             generatePackageJson: false,
             sourceMap: true,
+            externalDependencies: 'none',
         }),
     ],
 };
 `;
 
 writeFileSync(webpackConfigPath, webpackConfig);
-console.log(`\n✅ Updated webpack.config.js with shared path resolution`);
+console.log(`\n✅ Created webpack.config.js with auto-discovery of all @app/* libs`);
 
 console.log(`\n🎉 Application ${appName} created successfully!\n`);
 console.log('To start the app:');

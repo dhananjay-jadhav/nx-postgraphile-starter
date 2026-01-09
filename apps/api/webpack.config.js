@@ -1,9 +1,23 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { getResolveConfig, getOutputConfig } = require('../../tools/webpack/shared-config');
+const nodeExternals = require('webpack-node-externals');
+const { join } = require('path');
+const { getLibAliases } = require('../../tools/webpack/lib-aliases');
+
+const workspaceRoot = join(__dirname, '../..');
 
 module.exports = {
-    output: getOutputConfig(__dirname),
-    resolve: getResolveConfig(__dirname),
+    output: {
+        path: join(__dirname, 'dist'),
+        clean: true,
+    },
+    resolve: {
+        alias: getLibAliases(workspaceRoot),
+    },
+    externals: [
+        nodeExternals({
+            allowlist: [/^@app\//],
+        }),
+    ],
     plugins: [
         new NxAppWebpackPlugin({
             target: 'node',
@@ -15,6 +29,7 @@ module.exports = {
             outputHashing: 'none',
             generatePackageJson: false,
             sourceMap: true,
+            externalDependencies: 'none',
         }),
     ],
 };
