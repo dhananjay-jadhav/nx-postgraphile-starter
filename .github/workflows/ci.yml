@@ -69,7 +69,7 @@ jobs:
               run: docker compose up -d --wait
 
             - name: Run e2e tests
-              run: yarn e2e api-e2e
+              run: yarn e2e api-e2e --skip-nx-cache
 
             - name: Stop PostgreSQL
               if: always()
