@@ -13,6 +13,14 @@ module.exports = {
     resolve: {
         alias: getLibAliases(workspaceRoot),
     },
+    // Ignore warnings for missing optional dependencies and source maps
+    ignoreWarnings: [
+        /Failed to parse source map/,
+        /Critical dependency/,
+        /Can't resolve 'pg-native'/,
+        /Can't resolve 'bufferutil'/,
+        /Can't resolve 'utf-8-validate'/,
+    ],
     externals: [
         nodeExternals({
             allowlist: [/^@app\//],
