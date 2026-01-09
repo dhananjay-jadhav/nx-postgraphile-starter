@@ -27,7 +27,7 @@ jobs:
               run: yarn install --immutable
 
             - name: Set up environment
-              run: cp .env.example .env
+              run: cp .env.sample .env
 
             - name: Start PostgreSQL
               run: docker compose up -d --wait
@@ -63,7 +63,7 @@ jobs:
               run: yarn install --immutable
 
             - name: Set up environment
-              run: cp .env.example .env
+              run: cp .env.sample .env
 
             - name: Start PostgreSQL
               run: docker compose up -d --wait
