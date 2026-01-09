@@ -3,4 +3,4 @@
  * Contains Express middleware configuration
  */
 
-export { setupMiddleware } from './middleware';
+export { setupErrorHandlers, setupMiddleware } from './middleware';

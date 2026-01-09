@@ -4,7 +4,7 @@ import { getPool } from '@app/database';
 import { env, logger } from '@app/utils';
 import express from 'express';
 
-import { setupMiddleware } from './middleware';
+import { setupErrorHandlers, setupMiddleware } from './middleware';
 import { setupGracefulShutdown, setupGraphQL } from './server';
 
 // ============================================================================
@@ -26,11 +26,14 @@ async function startServer(): Promise<void> {
     getPool();
     logger.info('Database pool initialized');
 
-    // Setup middleware (logging, static files, health check)
+    // Setup middleware (logging, static files, routes)
     setupMiddleware(app);
 
-    // Setup GraphQL server
+    // Setup GraphQL server (must be before error handlers)
     const pgl = await setupGraphQL(app, server);
+
+    // Setup error handlers (must be after GraphQL)
+    setupErrorHandlers(app);
 
     // Setup graceful shutdown handlers
     setupGracefulShutdown(server, pgl);
