@@ -1,0 +1,81 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+permissions:
+    actions: read
+    contents: read
+
+jobs:
+    lint-test-build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Set up environment
+              run: cp .env.example .env
+
+            - name: Lint
+              run: yarn lint
+
+            - name: Test
+              run: yarn all:test
+
+            - name: Build
+              run: yarn all:build
+
+    e2e:
+        runs-on: ubuntu-latest
+        needs: lint-test-build
+        services:
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: postgres
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Set up environment
+              run: cp .env.example .env
+
+            - name: Build
+              run: yarn all:build
+
+            - name: Run e2e tests
+              run: yarn api:e2e
+              env:
+                  DATABASE_URL: postgres://postgres:password@localhost:5432/postgres

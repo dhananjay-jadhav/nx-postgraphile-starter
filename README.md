@@ -1,101 +1,225 @@
-# NxPostgraphileStarter
+# NX PostGraphile Starter
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL API starter built with [Nx](https://nx.dev), Express.js, and PostgreSQL.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Features
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/express?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- 🚀 **PostGraphile 5** - Next-generation GraphQL API from your PostgreSQL schema
+- 📦 **Nx Monorepo** - Scalable workspace with libraries and applications
+- 🔒 **Production-ready** - Includes health checks, graceful shutdown, and proper error handling
+- 📝 **Pino Logging** - Structured JSON logging with pino and pino-http
+- 🔧 **Environment Validation** - Type-safe configuration using [Joi](https://github.com/hapijs/joi)
+- 🏊 **Connection Pooling** - Optimized pg Pool configuration for production
+- 🧪 **Testing** - Jest-based unit and e2e testing
 
-## Run tasks
+## Project Structure
 
-To run the dev server for your app, use:
-
-```sh
-npx nx serve api
+```
+├── apps/
+│   ├── api/                 # Express + PostGraphile server
+│   │   └── src/
+│   │       ├── main.ts      # Application entry point
+│   │       └── routes/      # Express routes (health, api)
+│   └── api-e2e/             # End-to-end tests
+├── libs/
+│   ├── database/            # Database pool and configuration
+│   ├── gql/                 # PostGraphile preset and plugins
+│   └── utils/               # Shared utilities (logger, config, health checks)
 ```
 
-To create a production bundle:
+## Quick Start
 
-```sh
-npx nx build api
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL 14+
+- Yarn
+
+### Installation
+
+```bash
+# Install dependencies
+yarn install
+
+# Joi should already be installed, if not:
+yarn add joi
 ```
 
-To see all available targets to run for a project, run:
+### Configuration
 
-```sh
-npx nx show project api
+Create a `.env` file in the root directory:
+
+```env
+# Application
+NODE_ENV=development
+PORT=3000
+APP_NAME=postgraphile-api
+LOG_LEVEL=debug
+
+# Database
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/your_database
+DATABASE_SCHEMAS=public
+DATABASE_POOL_MAX=20
+DATABASE_POOL_MIN=2
+DATABASE_IDLE_TIMEOUT=30000
+DATABASE_CONNECTION_TIMEOUT=5000
+DATABASE_STATEMENT_TIMEOUT=30000
+DATABASE_QUERY_TIMEOUT=30000
+DATABASE_SSL=false
+
+# Security
+JWT_SECRET=your-secret-key
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Running the Application
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Development mode with hot reload
+yarn api:start
 
-## Add new projects
+# Build for production
+yarn api:build
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/express:app demo
+# Run e2e tests
+yarn api:e2e
 ```
 
-To generate a new library, use:
+## API Endpoints
 
-```sh
-npx nx g @nx/node:lib mylib
+| Endpoint    | Description                     |
+| ----------- | ------------------------------- |
+| `/graphql`  | GraphQL API endpoint            |
+| `/graphiql` | GraphiQL IDE (development only) |
+| `/api`      | API info endpoint               |
+| `/live`     | Kubernetes liveness probe       |
+| `/health`   | Comprehensive health check      |
+| `/ready`    | Kubernetes readiness probe      |
+
+## Environment Variables
+
+| Variable            | Description                          | Default                                                |
+| ------------------- | ------------------------------------ | ------------------------------------------------------ |
+| `NODE_ENV`          | Environment (development/production) | `development`                                          |
+| `PORT`              | Server port                          | `3000`                                                 |
+| `APP_NAME`          | Application name for logging         | `postgraphile-api`                                     |
+| `LOG_LEVEL`         | Logging level                        | `info`                                                 |
+| `DATABASE_URL`      | PostgreSQL connection string         | `postgres://postgres:postgres@localhost:5432/postgres` |
+| `DATABASE_SCHEMAS`  | Comma-separated schema names         | `public`                                               |
+| `DATABASE_POOL_MAX` | Maximum pool connections             | `20`                                                   |
+| `DATABASE_POOL_MIN` | Minimum pool connections             | `2`                                                    |
+| `DATABASE_SSL`      | Enable SSL connection                | `false`                                                |
+| `JWT_SECRET`        | Secret for JWT authentication        | -                                                      |
+
+## Libraries
+
+### @app/database
+
+Database connection pool and configuration.
+
+```typescript
+import { getPool, query, withTransaction, closePool } from '@app/database';
+
+// Execute a query
+const result = await query('SELECT * FROM users WHERE id = $1', [userId]);
+
+// Use transactions
+await withTransaction(async client => {
+    await client.query('INSERT INTO ...');
+    await client.query('UPDATE ...');
+});
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### @app/utils
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Shared utilities including logging, configuration, and health checks.
 
-## Set up CI!
+```typescript
+import { logger, env, registerHealthCheck } from '@app/utils';
 
-### Step 1
+// Structured logging
+logger.info({ userId }, 'User logged in');
 
-To connect to Nx Cloud, run the following command:
+// Access validated environment
+console.log(env.DATABASE_URL);
 
-```sh
-npx nx connect
+// Register custom health checks
+registerHealthCheck('redis', async () => {
+    // Check redis connection
+    return { healthy: true, latencyMs: 5 };
+});
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+### @app/gql
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+PostGraphile configuration and plugins.
 
-### Step 2
+```typescript
+import { preset } from '@app/gql';
+import { postgraphile } from 'postgraphile';
 
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+const pgl = postgraphile(preset);
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Scripts
 
-## Install Nx Console
+| Script      | Description                 |
+| ----------- | --------------------------- |
+| `api:start` | Start development server    |
+| `api:build` | Build for production        |
+| `api:e2e`   | Run e2e tests               |
+| `lint`      | Run linting on all projects |
+| `all:test`  | Run tests for all projects  |
+| `all:build` | Build all projects          |
+| `format`    | Format code with Prettier   |
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+## Production Deployment
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Docker
 
-## Useful links
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN yarn api:build
 
-Learn more:
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/dist/apps/api ./
+COPY --from=builder /app/node_modules ./node_modules
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "main.js"]
+```
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/express?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Health Checks
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
+The application exposes three health endpoints for Kubernetes:
+
+- **`/live`** - Liveness probe (is the process running?)
+- **`/ready`** - Readiness probe (is the app ready to serve traffic?)
+- **`/health`** - Detailed health report with all component statuses
+
+Example Kubernetes configuration:
+
+```yaml
+livenessProbe:
+    httpGet:
+        path: /live
+        port: 3000
+    initialDelaySeconds: 10
+    periodSeconds: 10
+readinessProbe:
+    httpGet:
+        path: /ready
+        port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+```
+
+## License
+
+MIT
+
 - [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)

@@ -2,16 +2,19 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "baseUrl": ".",
-        "rootDir": "src",
+        "rootDir": ".",
         "outDir": "dist",
         "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
         "emitDeclarationOnly": false,
         "types": ["node"]
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "codegen.ts"],
     "references": [
         {
             "path": "../utils/tsconfig.lib.json"
+        },
+        {
+            "path": "../database/tsconfig.lib.json"
         }
     ],
     "exclude": ["jest.config.ts", "jest.config.cts", "src/**/*.spec.ts", "src/**/*.test.ts"]

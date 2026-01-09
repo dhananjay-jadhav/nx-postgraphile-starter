@@ -1,5 +1,5 @@
 {
-    "name": "@app/database",
+    "name": "@app/gql",
     "version": "0.0.1",
     "private": true,
     "main": "./dist/index.js",
@@ -16,7 +16,10 @@
     },
     "dependencies": {
         "tslib": "^2.3.0",
-        "pg": "^8.16.3",
+        "@graphql-codegen/cli": "^5.0.3",
+        "postgraphile": "^5.0.0-rc.3",
+        "@graphile/simplify-inflection": "^8.0.0-rc.2",
+        "@app/database": "0.0.1",
         "@app/utils": "0.0.1"
     }
 }
