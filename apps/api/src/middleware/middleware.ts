@@ -2,8 +2,6 @@ import { errorHandler, gqlLogger, NotFoundError } from '@app/utils';
 import express, { Application, ErrorRequestHandler, RequestHandler } from 'express';
 import { join } from 'path';
 
-import { router } from '../router';
-
 /**
  * Configures Express middleware (before GraphQL):
  * 1. Request logging
@@ -18,9 +16,6 @@ export function setupMiddleware(app: Application): void {
 
     // Static files
     app.use('/assets', express.static(join(__dirname, '..', 'assets')));
-
-    // Mount application routes (health, api)
-    app.use(router);
 }
 
 /**
