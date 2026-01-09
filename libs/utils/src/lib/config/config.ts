@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
-import { ConfigError } from './errors';
-import { logger } from './logger';
+import { ConfigError } from '../errors/errors';
+import { logger } from '../logger/logger';
 
 const envSchema = Joi.object({
     // Application

@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 
-import { env } from './config';
+import { env } from '../config/config';
 import { AppError } from './errors';
 
 interface GraphQLRequestBody {

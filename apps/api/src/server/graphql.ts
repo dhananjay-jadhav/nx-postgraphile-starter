@@ -8,14 +8,20 @@ import { postgraphile, PostGraphileInstance } from 'postgraphile';
 
 /**
  * Initializes and mounts the PostGraphile GraphQL server.
+ * @throws Error if GraphQL server fails to initialize
  */
 export async function setupGraphQL(app: Express, server: Server): Promise<PostGraphileInstance> {
-    const pgl = postgraphile(preset);
-    const serv = pgl.createServ(grafserv);
+    try {
+        const pgl = postgraphile(preset);
+        const serv = pgl.createServ(grafserv);
 
-    await serv.addTo(app, server);
+        await serv.addTo(app, server);
 
-    logger.info('GraphQL server initialized');
+        logger.info('GraphQL server initialized');
 
-    return pgl;
+        return pgl;
+    } catch (error) {
+        logger.error({ error }, 'Failed to initialize GraphQL server');
+        throw error;
+    }
 }

@@ -1,17 +1,27 @@
+/**
+ * Health Check Routes
+ * Provides Kubernetes-compatible health endpoints for container orchestration
+ */
 import { getPoolStats } from '@app/database';
 import { livenessCheck, logger, readinessCheck, runHealthChecks } from '@app/utils';
 import type { IRouter } from 'express';
 import { NextFunction, Request, Response, Router } from 'express';
 
-const router: IRouter = Router();
+const healthRoutes: IRouter = Router();
 
-// Liveness probe - confirms the process is running
-router.get('/live', (_req: Request, res: Response) => {
+/**
+ * Liveness probe - confirms the process is running
+ * Used by Kubernetes to determine if container needs restart
+ */
+healthRoutes.get('/live', (_req: Request, res: Response) => {
     res.status(200).json(livenessCheck());
 });
 
-// Health check - comprehensive health report
-router.get('/health', async (_req: Request, res: Response, next: NextFunction) => {
+/**
+ * Health check - comprehensive health report
+ * Returns detailed status of all system components
+ */
+healthRoutes.get('/health', async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const report = await runHealthChecks();
         const poolStats = getPoolStats();
@@ -21,8 +31,11 @@ router.get('/health', async (_req: Request, res: Response, next: NextFunction) =
     }
 });
 
-// Readiness probe - confirms all components are ready
-router.get('/ready', async (_req: Request, res: Response) => {
+/**
+ * Readiness probe - confirms all components are ready to serve traffic
+ * Used by Kubernetes to determine if pod should receive traffic
+ */
+healthRoutes.get('/ready', async (_req: Request, res: Response) => {
     try {
         const result = await readinessCheck();
         if (result.ready) {
@@ -36,4 +49,4 @@ router.get('/ready', async (_req: Request, res: Response) => {
     }
 });
 
-export default router;
+export default healthRoutes;

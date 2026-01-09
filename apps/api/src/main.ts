@@ -4,9 +4,8 @@ import { getPool } from '@app/database';
 import { env, logger } from '@app/utils';
 import express from 'express';
 
-import { setupErrorHandling, setupMiddleware, setupRoutes } from './middleware/middleware';
-import { setupGraphQL } from './server/graphql';
-import { setupGracefulShutdown } from './server/shutdown';
+import { setupMiddleware } from './middleware';
+import { setupGracefulShutdown, setupGraphQL } from './server';
 
 // ============================================================================
 // Server Initialization
@@ -30,20 +29,14 @@ async function startServer(): Promise<void> {
     // Setup middleware (logging, static files, health check)
     setupMiddleware(app);
 
-    // Setup application routes
-    setupRoutes(app);
-
     // Setup GraphQL server
     const pgl = await setupGraphQL(app, server);
-
-    // Setup error handling (must be after all routes)
-    setupErrorHandling(app);
 
     // Setup graceful shutdown handlers
     setupGracefulShutdown(server, pgl);
 
     // Start listening
-    await server.listen(env.PORT, () => {
+    server.listen(env.PORT, () => {
         logger.info({ port: env.PORT, env: env.NODE_ENV }, `${env.APP_NAME} listening at http://localhost:${env.PORT}`);
         logger.info({ port: env.PORT }, `GraphQL available at http://localhost:${env.PORT}/graphql`);
     });
@@ -53,14 +46,7 @@ async function startServer(): Promise<void> {
 // Entry Point
 // ============================================================================
 
-startServer()
-    .then(() => {
-        logger.info('Server started successfully');
-    })
-    .catch((error: Error) => {
-        logger.error({ error }, 'Failed to start server');
-        process.exit(1);
-    })
-    .finally(() => {
-        logger.info('Server initialization process complete');
-    });
+startServer().catch((error: Error) => {
+    logger.error({ error }, 'Failed to start server');
+    process.exit(1);
+});
