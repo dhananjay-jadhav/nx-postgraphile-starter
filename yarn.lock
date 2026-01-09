@@ -105,6 +105,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@app/utils@workspace:libs/utils"
   dependencies:
+    express: "npm:^4.21.2"
     joi: "npm:^18.0.2"
     pino: "npm:^10.1.0"
     pino-http: "npm:^11.0.0"

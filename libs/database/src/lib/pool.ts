@@ -1,4 +1,4 @@
-import { logger, registerHealthCheck } from '@app/utils';
+import { DatabaseError, logger, registerHealthCheck } from '@app/utils';
 import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
 import { databaseConfig } from './database.config';
@@ -42,11 +42,21 @@ export async function query<T extends QueryResultRow = QueryResultRow>(
     text: string,
     params?: unknown[]
 ): Promise<QueryResult<T>> {
-    return getPool().query<T>(text, params);
+    try {
+        return await getPool().query<T>(text, params);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Query failed';
+        throw new DatabaseError(message);
+    }
 }
 
 export async function getClient(): Promise<PoolClient> {
-    return getPool().connect();
+    try {
+        return await getPool().connect();
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to get database client';
+        throw new DatabaseError(message);
+    }
 }
 
 export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
@@ -56,9 +66,13 @@ export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>)
         const result = await fn(client);
         await client.query('COMMIT');
         return result;
-    } catch (e) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        throw e;
+        if (error instanceof DatabaseError) {
+            throw error;
+        }
+        const message = error instanceof Error ? error.message : 'Transaction failed';
+        throw new DatabaseError(message);
     } finally {
         client.release();
     }

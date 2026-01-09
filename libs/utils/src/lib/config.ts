@@ -1,5 +1,6 @@
 import Joi from 'joi';
 
+import { ConfigError } from './errors';
 import { logger } from './logger';
 
 const envSchema = Joi.object({
@@ -57,9 +58,10 @@ function validateEnv(): EnvConfig {
     };
 
     if (error) {
-        const errorMessages = error.details.map((d: Joi.ValidationErrorItem) => `  - ${d.message}`).join('\n');
-        logger.error(`Environment validation failed:\n${errorMessages}`);
-        throw new Error(`Environment validation failed:\n${errorMessages}`);
+        const validationErrors = error.details.map((d: Joi.ValidationErrorItem) => d.message);
+        const errorMessage = `Environment validation failed:\n${validationErrors.map(e => `  - ${e}`).join('\n')}`;
+        logger.error(errorMessage);
+        throw new ConfigError(errorMessage, validationErrors);
     }
 
     const config: EnvConfig = {

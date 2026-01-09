@@ -1,6 +1,6 @@
 import { closePool, getPool } from '@app/database';
 import { preset } from '@app/gql';
-import { env, gqlLogger, logger } from '@app/utils';
+import { env, errorHandler, gqlLogger, logger, NotFoundError } from '@app/utils';
 import express from 'express';
 import { grafserv } from 'grafserv/express/v4';
 import * as path from 'path';
@@ -24,19 +24,20 @@ async function startServer(): Promise<void> {
     const pgl = postgraphile(preset);
     const serv = pgl.createServ(grafserv);
 
-    // Error handling - _next is required for Express error middleware signature
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction): void => {
-        req.log.error({ err }, 'Unhandled error');
-        res.status(500).json({ error: 'Internal Server Error' });
-    });
-
     const port = env.PORT;
     const server = app.listen(port, () => {
         logger.info({ port }, `Server listening at http://localhost:${port}/graphql`);
     });
 
     await serv.addTo(app, server);
+
+    // 404 handler for unknown routes
+    app.use((_req, _res, next) => {
+        next(new NotFoundError('Route not found'));
+    });
+
+    // Error handling
+    app.use(errorHandler);
 
     // Graceful shutdown
     const shutdown = async (signal: string): Promise<void> => {
