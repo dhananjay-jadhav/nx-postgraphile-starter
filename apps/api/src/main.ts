@@ -1,62 +1,66 @@
-import { closePool, getPool } from '@app/database';
-import { preset } from '@app/gql';
-import { env, errorHandler, gqlLogger, logger, NotFoundError } from '@app/utils';
-import express from 'express';
-import { grafserv } from 'grafserv/express/v4';
-import * as path from 'path';
-import { postgraphile } from 'postgraphile';
+import { createServer } from 'node:http';
 
-import routes from './routes';
+import { getPool } from '@app/database';
+import { env, logger } from '@app/utils';
+import express from 'express';
+
+import { setupErrorHandling, setupMiddleware, setupRoutes } from './middleware/middleware';
+import { setupGraphQL } from './server/graphql';
+import { setupGracefulShutdown } from './server/shutdown';
+
+// ============================================================================
+// Server Initialization
+// ============================================================================
 
 async function startServer(): Promise<void> {
+    // Create Express app and HTTP server
     const app = express();
+    const server = createServer(app);
 
-    app.use(gqlLogger);
-    app.use('/assets', express.static(path.join(__dirname, 'assets')));
+    // Handle server errors
+    server.on('error', (error: Error) => {
+        logger.error({ error }, 'Server error');
+        process.exit(1);
+    });
 
-    // Initialize database pool (registers health checks)
+    // Initialize database connection
     getPool();
+    logger.info('Database pool initialized');
 
-    // Mount routes
-    app.use(routes);
+    // Setup middleware (logging, static files, health check)
+    setupMiddleware(app);
 
-    // Initialize PostGraphile
-    const pgl = postgraphile(preset);
-    const serv = pgl.createServ(grafserv);
+    // Setup application routes
+    setupRoutes(app);
 
-    const port = env.PORT;
-    const server = app.listen(port, () => {
-        logger.info({ port }, `Server listening at http://localhost:${port}/graphql`);
+    // Setup GraphQL server
+    const pgl = await setupGraphQL(app, server);
+
+    // Setup error handling (must be after all routes)
+    setupErrorHandling(app);
+
+    // Setup graceful shutdown handlers
+    setupGracefulShutdown(server, pgl);
+
+    // Start listening
+    await server.listen(env.PORT, () => {
+        logger.info({ port: env.PORT, env: env.NODE_ENV }, `${env.APP_NAME} listening at http://localhost:${env.PORT}`);
+        logger.info({ port: env.PORT }, `GraphQL available at http://localhost:${env.PORT}/graphql`);
     });
-
-    await serv.addTo(app, server);
-
-    // 404 handler for unknown routes
-    app.use((_req, _res, next) => {
-        next(new NotFoundError('Route not found'));
-    });
-
-    // Error handling
-    app.use(errorHandler);
-
-    // Graceful shutdown
-    const shutdown = async (signal: string): Promise<void> => {
-        logger.info({ signal }, 'Shutting down...');
-        await pgl.release();
-        await closePool();
-        server.close(() => {
-            logger.info('Server closed');
-            process.exit(0);
-        });
-        setTimeout(() => process.exit(1), 10000);
-    };
-
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    server.on('error', error => logger.error({ error }, 'Server error'));
 }
 
-startServer().catch(error => {
-    logger.error({ error }, 'Failed to start server');
-    process.exit(1);
-});
+// ============================================================================
+// Entry Point
+// ============================================================================
+
+startServer()
+    .then(() => {
+        logger.info('Server started successfully');
+    })
+    .catch((error: Error) => {
+        logger.error({ error }, 'Failed to start server');
+        process.exit(1);
+    })
+    .finally(() => {
+        logger.info('Server initialization process complete');
+    });

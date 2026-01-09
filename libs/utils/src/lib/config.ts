@@ -9,6 +9,7 @@ const envSchema = Joi.object({
     PORT: Joi.number().port().default(3000),
     APP_NAME: Joi.string().default('postgraphile-api'),
     LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
+    SHUTDOWN_TIMEOUT: Joi.number().min(1000).default(10000),
 
     // Database
     DATABASE_URL: Joi.string()
@@ -35,6 +36,7 @@ export interface EnvConfig {
     PORT: number;
     APP_NAME: string;
     LOG_LEVEL: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+    SHUTDOWN_TIMEOUT: number;
     DATABASE_URL: string;
     DATABASE_SCHEMAS: string;
     DATABASE_POOL_MAX: number;
