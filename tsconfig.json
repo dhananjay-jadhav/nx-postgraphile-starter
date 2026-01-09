@@ -1,5 +1,13 @@
 {
     "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@app/utils": ["libs/utils/src/index.ts"],
+            "@app/database": ["libs/database/src/index.ts"],
+            "@app/gql": ["libs/gql/src/index.ts"]
+        }
+    },
     "compileOnSave": false,
     "files": [],
     "references": [

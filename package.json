@@ -16,7 +16,9 @@
         "codegen:watch": "graphql-codegen --config libs/gql/codegen.ts --watch",
         "db:up": "docker compose up -d --wait",
         "db:down": "docker compose down -v",
-        "db:logs": "docker compose logs -f"
+        "db:logs": "docker compose logs -f",
+        "gen:app": "node scripts/generate-app.js",
+        "gen:lib": "node scripts/generate-lib.js"
     },
     "private": true,
     "dependencies": {
