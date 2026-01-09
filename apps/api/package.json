@@ -1,8 +1,8 @@
 {
-  "name": "@nx-postgraphile-starter/api",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "express": "^4.21.2"
-  }
+    "name": "@app/api",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "express": "^4.21.2"
+    }
 }

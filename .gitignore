@@ -42,3 +42,10 @@ Thumbs.db
 .nx/workspace-data
 
 test-output
+
+.env
+
+error.log
+
+# .yarn/*
+.yarn/install-state.gz

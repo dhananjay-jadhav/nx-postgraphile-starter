@@ -1,20 +1,17 @@
 {
-  "name": "@nx-postgraphile-starter/api-e2e",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
-  "implicitDependencies": ["@nx-postgraphile-starter/api"],
-  "targets": {
-    "e2e": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
-      "options": {
-        "jestConfig": "apps/api-e2e/jest.config.cts",
-        "passWithNoTests": true
-      },
-      "dependsOn": [
-        "@nx-postgraphile-starter/api:build",
-        "@nx-postgraphile-starter/api:serve"
-      ]
+    "name": "@app/api-e2e",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "implicitDependencies": ["@app/api"],
+    "targets": {
+        "e2e": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+            "options": {
+                "jestConfig": "apps/api-e2e/jest.config.cts",
+                "passWithNoTests": true
+            },
+            "dependsOn": ["@app/api:build", "@app/api:serve"]
+        }
     }
-  }
 }

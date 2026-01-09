@@ -1,57 +1,54 @@
 {
-  "name": "@nx-postgraphile-starter/api",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/api/src",
-  "projectType": "application",
-  "tags": [],
-  "targets": {
-    "prune-lockfile": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/apps/api/dist/package.json",
-        "{workspaceRoot}/apps/api/dist/yarn.lock"
-      ],
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "copy-workspace-modules": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": ["{workspaceRoot}/apps/api/dist/workspace_modules"],
-      "executor": "@nx/js:copy-workspace-modules",
-      "options": {
-        "buildTarget": "build"
-      }
-    },
-    "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
-    },
-    "serve": {
-      "continuous": true,
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
-      "options": {
-        "buildTarget": "@nx-postgraphile-starter/api:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "@nx-postgraphile-starter/api:build:development"
+    "name": "@app/api",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/api/src",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "prune-lockfile": {
+            "dependsOn": ["build"],
+            "cache": true,
+            "executor": "@nx/js:prune-lockfile",
+            "outputs": ["{workspaceRoot}/apps/api/dist/package.json", "{workspaceRoot}/apps/api/dist/yarn.lock"],
+            "options": {
+                "buildTarget": "build"
+            }
         },
-        "production": {
-          "buildTarget": "@nx-postgraphile-starter/api:build:production"
+        "copy-workspace-modules": {
+            "dependsOn": ["build"],
+            "cache": true,
+            "outputs": ["{workspaceRoot}/apps/api/dist/workspace_modules"],
+            "executor": "@nx/js:copy-workspace-modules",
+            "options": {
+                "buildTarget": "build"
+            }
+        },
+        "prune": {
+            "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+            "executor": "nx:noop"
+        },
+        "serve": {
+            "continuous": true,
+            "executor": "@nx/js:node",
+            "defaultConfiguration": "development",
+            "dependsOn": ["build"],
+            "options": {
+                "buildTarget": "@app/api:build",
+                "runBuildTargetDependencies": false
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "@app/api:build:development"
+                },
+                "production": {
+                    "buildTarget": "@app/api:build:production"
+                }
+            }
+        },
+        "test": {
+            "options": {
+                "passWithNoTests": true
+            }
         }
-      }
-    },
-    "test": {
-      "options": {
-        "passWithNoTests": true
-      }
     }
-  }
 }
