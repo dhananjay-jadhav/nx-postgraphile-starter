@@ -28,13 +28,10 @@
             "executor": "nx:noop"
         },
         "serve": {
-            "continuous": true,
             "executor": "@nx/js:node",
             "defaultConfiguration": "development",
-            "dependsOn": ["build"],
             "options": {
-                "buildTarget": "@app/api:build",
-                "runBuildTargetDependencies": false
+                "buildTarget": "@app/api:build"
             },
             "configurations": {
                 "development": {

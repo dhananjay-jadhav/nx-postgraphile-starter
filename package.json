@@ -3,16 +3,20 @@
     "version": "0.0.0",
     "license": "MIT",
     "scripts": {
-        "api:build": "nx build api",
-        "api:start": "nx serve api",
-        "api:e2e": "nx run api-e2e:e2e",
-        "codegen": "graphql-codegen --config libs/gql/codegen.ts",
-        "codegen:watch": "graphql-codegen --config libs/gql/codegen.ts --watch",
+        "start": "nx serve",
+        "build": "nx build",
+        "test": "nx test",
+        "e2e": "nx e2e",
         "lint": "nx run-many --target=lint --all --parallel",
         "all:test": "nx run-many --target=test --all --parallel --passWithNoTests",
         "all:build": "nx run-many --target=build --all --parallel",
         "format": "nx format:write",
-        "prepare": "husky"
+        "prepare": "husky",
+        "codegen": "graphql-codegen --config libs/gql/codegen.ts",
+        "codegen:watch": "graphql-codegen --config libs/gql/codegen.ts --watch",
+        "db:up": "docker compose up -d --wait",
+        "db:down": "docker compose down -v",
+        "db:logs": "docker compose logs -f"
     },
     "private": true,
     "dependencies": {

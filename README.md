@@ -9,8 +9,11 @@ A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL A
 - 🔒 **Production-ready** - Includes health checks, graceful shutdown, and proper error handling
 - 📝 **Pino Logging** - Structured JSON logging with pino and pino-http
 - 🔧 **Environment Validation** - Type-safe configuration using [Joi](https://github.com/hapijs/joi)
+- 🐳 **Docker Integration** - `docker-compose` for easy local development setup
+- 🔄 **GitHub Actions CI** - Automated linting, testing, and building
 - 🏊 **Connection Pooling** - Optimized pg Pool configuration for production
 - 🧪 **Testing** - Jest-based unit and e2e testing
+- 🤖 **GraphQL Codegen** - Type generation for your GraphQL schema
 
 ## Project Structure
 
@@ -29,56 +32,52 @@ A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL A
 
 ## Quick Start
 
-### Prerequisites
+##Yarn
 
-- Node.js 20+
-- PostgreSQL 14+
-- Yarn
+- Docker
 
 ### Installation
 
 ```bash
 # Install dependencies
 yarn install
-
-# Joi should already be installed, if not:
-yarn add joi
 ```
+
+### Running the Database
+
+In a separate terminal, start the PostgreSQL database using Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+This will start a PostgreSQL container and expose it on port `5432`.
 
 ### Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory. You can copy the example file:
 
-```env
-# Application
-NODE_ENV=development
-PORT=3000
-APP_NAME=postgraphile-api
-LOG_LEVEL=debug
-
-# Database
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/your_database
-DATABASE_SCHEMAS=public
-DATABASE_POOL_MAX=20
-DATABASE_POOL_MIN=2
-DATABASE_IDLE_TIMEOUT=30000
-DATABASE_CONNECTION_TIMEOUT=5000
-DATABASE_STATEMENT_TIMEOUT=30000
-DATABASE_QUERY_TIMEOUT=30000
-DATABASE_SSL=false
-
-# Security
-JWT_SECRET=your-secret-key
+```bash
+cp .env.example .env
 ```
+
+The default `DATABASE_URL` in `.env.example` is configured to work with the `docker-compose` setup.
 
 ### Running the Application
 
 ```bash
 # Development mode with hot reload
-yarn api:start
+yarn start api
 
 # Build for production
-yarn api:build
+yarn build api
+
+# Run unit tests
+yarn test utils
+yarn test database
+
+# Run e2e tests
+yarn e2e api-build
 
 # Run e2e tests
 yarn api:e2e
@@ -108,7 +107,7 @@ yarn api:e2e
 | `DATABASE_POOL_MAX` | Maximum pool connections             | `20`                                                   |
 | `DATABASE_POOL_MIN` | Minimum pool connections             | `2`                                                    |
 | `DATABASE_SSL`      | Enable SSL connection                | `false`                                                |
-| `JWT_SECRET`        | Secret for JWT authentication        | -                                                      |
+| `JWT_SECRET`        | Secret for JWT authentication        | - assword                                              |
 
 ## Libraries
 
@@ -162,19 +161,24 @@ const pgl = postgraphile(preset);
 
 ## Scripts
 
-| Script      | Description                 |
-| ----------- | --------------------------- |
-| `api:start` | Start development server    |
-| `api:build` | Build for production        |
-| `api:e2e`   | Run e2e tests               |
-| `lint`      | Run linting on all projects |
-| `all:test`  | Run tests for all projects  |
-| `all:build` | Build all projects          |
-| `format`    | Format code with Prettier   |
-
-## Production Deployment
-
-### Docker
+| Script        | Description                      |
+| ------------- | -------------------------------- |
+| `api:start`   | Start development server         |
+| `api:build`   | Build for production             |
+| `api:e2e`     | Run e2e tests                    |
+| `lint`        | Description                      |
+| ------------- | -------------------------------- |
+| `start api`   | Start development server         |
+| `build api`   | Build the API for production     |
+| `e2e api-e2e` | Run e2e tests for the API        |
+| `lint`        | Run linting on all projects      |
+| `test <lib>`  | Run unit tests for a library     |
+| `all:test`    | Run tests for all projects       |
+| `all:build`   | Build all projects               |
+| `format`      | Format code with Prettier        |
+| `db:up`       | Start PostgreSQL via Docker      |
+| `db:down`     | Stop and remove PostgreSQL       |
+| `db:logs`     | View PostgreSQL container logs   |
 
 ```dockerfile
 FROM node:20-alpine AS builder

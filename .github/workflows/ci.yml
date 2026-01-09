@@ -36,10 +36,10 @@ jobs:
               run: yarn lint
 
             - name: Test
-              run: yarn all:test
+              run: yarn test --all
 
             - name: Build
-              run: yarn all:build
+              run: yarn build --all
 
             - name: Stop PostgreSQL
               if: always()
@@ -68,11 +68,8 @@ jobs:
             - name: Start PostgreSQL
               run: docker compose up -d --wait
 
-            - name: Build
-              run: yarn all:build
-
             - name: Run e2e tests
-              run: yarn api:e2e
+              run: yarn e2e api-e2e
 
             - name: Stop PostgreSQL
               if: always()
