@@ -19,10 +19,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@app/database@workspace:libs/database":
+"@app/database@npm:0.0.1, @app/database@workspace:libs/database":
   version: 0.0.0-use.local
   resolution: "@app/database@workspace:libs/database"
   dependencies:
+    "@app/utils": "npm:0.0.1"
+    pg: "npm:^8.16.3"
     tslib: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
@@ -31,6 +33,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@app/gql@workspace:libs/gql"
   dependencies:
+    "@app/database": "npm:0.0.1"
+    "@app/utils": "npm:0.0.1"
+    "@graphile/simplify-inflection": "npm:^8.0.0-rc.2"
+    "@graphql-codegen/cli": "npm:^5.0.3"
+    postgraphile: "npm:^5.0.0-rc.3"
     tslib: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
@@ -94,10 +101,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@app/utils@workspace:libs/utils":
+"@app/utils@npm:0.0.1, @app/utils@workspace:libs/utils":
   version: 0.0.0-use.local
   resolution: "@app/utils@workspace:libs/utils"
   dependencies:
+    joi: "npm:^18.0.2"
+    pino: "npm:^10.1.0"
+    pino-http: "npm:^11.0.0"
     tslib: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
