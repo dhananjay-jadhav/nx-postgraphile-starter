@@ -181,18 +181,24 @@ const pgl = postgraphile(preset);
 | `db:logs`     | View PostgreSQL container logs   |
 
 ```dockerfile
-FROM node:20-alpine AS builder
+# Stage 1: Build the application
+FROM node:24 as builder
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY nx.json ./
+COPY tsconfig.base.json ./
+COPY .yarn ./
+RUN yarn install --immutable
 COPY . .
-RUN yarn api:build
+RUN npx nx build api
 
-FROM node:20-alpine
+# Stage 2: Create the final production image
+FROM node:24-alpine
 WORKDIR /app
-COPY --from=builder /app/dist/apps/api ./
-COPY --from=builder /app/node_modules ./node_modules
-ENV NODE_ENV=production
+COPY --from=builder /app/dist/apps/api/package.json ./
+COPY --from=builder /app/dist/apps/api/yarn.lock ./
+RUN yarn workspaces focus --all --production
+COPY --from=builder /app/dist/apps/api .
 EXPOSE 3000
 CMD ["node", "main.js"]
 ```
