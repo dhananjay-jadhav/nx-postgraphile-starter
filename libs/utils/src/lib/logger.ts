@@ -5,23 +5,10 @@ const logLevel = process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
 
 export const logger = pino({
     level: logLevel,
-    ...(isProduction
-        ? {
-              formatters: {
-                  level: (label: string): { level: string } => ({ level: label }),
-              },
-              timestamp: pino.stdTimeFunctions.isoTime,
-          }
-        : {
-              transport: {
-                  target: 'pino-pretty',
-                  options: {
-                      colorize: true,
-                      translateTime: 'SYS:standard',
-                      ignore: 'pid,hostname',
-                  },
-              },
-          }),
+    formatters: {
+        level: (label: string): { level: string } => ({ level: label }),
+    },
+    timestamp: pino.stdTimeFunctions.isoTime,
     base: {
         env: process.env.NODE_ENV || 'development',
     },
