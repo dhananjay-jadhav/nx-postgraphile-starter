@@ -47,5 +47,9 @@ test-output
 
 error.log
 
+# Performance test results
+performance/results/*.txt
+performance/results/*.json
+
 # .yarn/*
 .yarn/install-state.gz

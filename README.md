@@ -94,6 +94,59 @@ yarn api:e2e
 | `/health`   | Comprehensive health check      |
 | `/ready`    | Kubernetes readiness probe      |
 
+## Performance
+
+### Benchmark Results
+
+> **Test Environment**: MacBook Air M1, Node.js v20, PostgreSQL 15  
+> **Test Parameters**: 10 concurrent connections, 10 seconds duration
+
+#### REST API Performance
+
+| Endpoint  | Req/sec | Avg Latency | P99 Latency | Throughput |
+| --------- | ------- | ----------- | ----------- | ---------- |
+| `/live`   | 42,182  | 0.01 ms     | < 1 ms.     | 26 MB/s    |
+| `/ready`  | 16,529  | 0.02 ms     | 1 ms        | 10 MB/s    |
+| `/health` | 15,238  | 0.03 ms     | 1 ms        | 12 MB/s    |
+| `/api`    | 11,350  | 0.18 ms     | 2 ms        | 20 MB/s    |
+
+#### GraphQL Performance
+
+| Query         | Req/sec | Avg Latency | P99 Latency | Throughput |
+| ------------- | ------- | ----------- | ----------- | ---------- |
+| Simple Query  | 28,138  | 0.03 ms     | 1 ms        | 21 MB/s    |
+| Introspection | 22,205  | 0.04 ms     | 2 ms        | 24 MB/s    |
+
+#### Key Metrics
+
+- ⚡ **Peak Throughput**: 42,182 req/s (liveness endpoint)
+- 🚀 **GraphQL Throughput**: 28,138 req/s (simple queries)
+- 📊 **P99 Latency**: < 2ms for all endpoints
+- ✅ **Error Rate**: 0%
+
+### Running Performance Tests
+
+```bash
+# Start the API server
+yarn start
+
+# Run all performance tests
+yarn perf:test
+
+# Run specific test(s)
+yarn perf:run health
+yarn perf:run health,live,graphql_typename
+
+# Run by category
+yarn perf:rest
+yarn perf:graphql
+
+# Stress test (100 connections, 60 seconds)
+yarn perf:stress
+```
+
+See [performance/README.md](performance/README.md) for detailed documentation.
+
 ## Environment Variables
 
 | Variable            | Description                          | Default                                                |
@@ -161,24 +214,25 @@ const pgl = postgraphile(preset);
 
 ## Scripts
 
-| Script        | Description                      |
-| ------------- | -------------------------------- |
-| `api:start`   | Start development server         |
-| `api:build`   | Build for production             |
-| `api:e2e`     | Run e2e tests                    |
-| `lint`        | Description                      |
-| ------------- | -------------------------------- |
-| `start api`   | Start development server         |
-| `build api`   | Build the API for production     |
-| `e2e api-e2e` | Run e2e tests for the API        |
-| `lint`        | Run linting on all projects      |
-| `test <lib>`  | Run unit tests for a library     |
-| `all:test`    | Run tests for all projects       |
-| `all:build`   | Build all projects               |
-| `format`      | Format code with Prettier        |
-| `db:up`       | Start PostgreSQL via Docker      |
-| `db:down`     | Stop and remove PostgreSQL       |
-| `db:logs`     | View PostgreSQL container logs   |
+| Script                  | Description                        |
+| ----------------------- | ---------------------------------- |
+| `yarn start api`        | Start development server           |
+| `yarn build api`        | Build the API for production       |
+| `yarn api:e2e`          | Run e2e tests for the API          |
+| `yarn lint`             | Run linting on all projects        |
+| `yarn test <lib>`       | Run unit tests for a library       |
+| `yarn all:test`         | Run tests for all projects         |
+| `yarn all:build`        | Build all projects                 |
+| `yarn format`           | Format code with Prettier          |
+| `yarn db:up`            | Start PostgreSQL via Docker        |
+| `yarn db:down`          | Stop and remove PostgreSQL         |
+| `yarn db:logs`          | View PostgreSQL container logs     |
+| `yarn perf:test`        | Run all performance tests          |
+| `yarn perf:list`        | List available performance tests   |
+| `yarn perf:run <tests>` | Run specific test(s)               |
+| `yarn perf:rest`        | Run REST endpoint tests            |
+| `yarn perf:graphql`     | Run GraphQL tests                  |
+| `yarn perf:stress`      | Stress test (100 connections, 60s) |
 
 ```dockerfile
 # Stage 1: Build the application

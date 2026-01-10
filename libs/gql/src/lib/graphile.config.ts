@@ -28,5 +28,7 @@ export const preset: GraphileConfig.Preset = {
         // Schema export for tooling (development only)
         exportSchemaSDLPath: env.isDevelopment ? './libs/gql/src/lib/schema.graphql' : undefined,
         sortExport: true,
+        // Performance: disable introspection in production (optional)
+        // disableIntrospection: env.isProduction,
     },
 };

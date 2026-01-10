@@ -1,21 +1,41 @@
 import { errorHandler, gqlLogger, NotFoundError } from '@app/utils';
-import express, { Application, ErrorRequestHandler, RequestHandler } from 'express';
+import compression from 'compression';
+import express, { ErrorRequestHandler, Express, RequestHandler } from 'express';
+import helmet from 'helmet';
 import { join } from 'path';
 
 /**
  * Configures Express middleware (before GraphQL):
- * 1. Request logging
- * 2. Static file serving
- * 3. Application routes (health, api)
+ * 1. Security headers (helmet)
+ * 2. Response compression (gzip/brotli)
+ * 3. Request logging
+ * 4. Static file serving
  *
  * Note: 404 and error handlers are added AFTER GraphQL is mounted
  */
-export function setupMiddleware(app: Application): void {
+export function setupMiddleware(app: Express): void {
+    // Security headers
+    app.use(
+        helmet({
+            contentSecurityPolicy: false, // Disabled for GraphiQL
+            crossOriginEmbedderPolicy: false,
+        })
+    );
+
+    // Response compression (gzip)
+    app.use(compression());
+
     // Request logging
     app.use(gqlLogger as RequestHandler);
 
-    // Static files
-    app.use('/assets', express.static(join(__dirname, '..', 'assets')));
+    // Static files with caching
+    app.use(
+        '/assets',
+        express.static(join(__dirname, '..', 'assets'), {
+            maxAge: '1d',
+            etag: true,
+        })
+    );
 }
 
 /**
@@ -25,7 +45,7 @@ export function setupMiddleware(app: Application): void {
  *
  * MUST be called after GraphQL is mounted to allow /graphql to work
  */
-export function setupErrorHandlers(app: Application): void {
+export function setupErrorHandlers(app: Express): void {
     // 404 handler for unknown routes
     app.use(((_req, _res, next) => {
         next(new NotFoundError('Route not found'));

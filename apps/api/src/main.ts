@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 
 import { getPool } from '@app/database';
 import { env, logger } from '@app/utils';
-import express from 'express';
+import express, { Express } from 'express';
 
 import { setupErrorHandlers, setupMiddleware } from './middleware';
 import { router } from './router';
@@ -14,7 +14,7 @@ import { setupGracefulShutdown, setupGraphQL } from './server';
 
 async function startServer(): Promise<void> {
     // Create Express app and HTTP server
-    const app = express();
+    const app: Express = express();
     const server = createServer(app);
 
     // Handle server errors
