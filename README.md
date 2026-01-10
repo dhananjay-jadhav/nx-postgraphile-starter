@@ -4,7 +4,8 @@ A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL A
 
 ## Related Projects
 
-- **[nx-postgraphile-fastify-template](https://github.com/dhananjay-jadhav/nx-postgraphile-fastify-template.git)**: If you are looking for even better performance, check out this alternative starter that uses [Fastify](https://www.fastify.io/) instead of Express. Fastify is known for its high throughput and low overhead, making this template significantly faster for many workloads.
+- **[nx-postgraphile-fastify-template](https://github.com/dhananjay-jadhav/nx-postgraphile-fastify-template)**: For even better performance, check out this alternative starter that uses Fastify instead of Express. Fastify delivers 2-3x higher throughput with lower overhead, making it ideal for high-load applications. See the [detailed benchmark comparison](https://github.com/dhananjay-jadhav/nx-postgraphile-fastify-template/blob/main/performance/BenchMark.md).
+
 
 ## Features
 
