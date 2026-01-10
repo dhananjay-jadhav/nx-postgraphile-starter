@@ -6,7 +6,7 @@ const apiRoutes: IRouter = Router();
 /**
  * Base API endpoint - returns welcome message
  */
-apiRoutes.get('/api', (req: Request, res: Response) => {
+apiRoutes.get('/', (req: Request, res: Response) => {
     req.log.info('Processing API request');
     res.json({ message: 'Welcome to api!' });
 });
