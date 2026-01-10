@@ -2,6 +2,10 @@
 
 A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL API starter built with [Nx](https://nx.dev), Express.js, and PostgreSQL.
 
+## Related Projects
+
+- **[nx-postgraphile-fastify-template](https://github.com/dhananjay-jadhav/nx-postgraphile-fastify-template.git)**: If you are looking for even better performance, check out this alternative starter that uses [Fastify](https://www.fastify.io/) instead of Express. Fastify is known for its high throughput and low overhead, making this template significantly faster for many workloads.
+
 ## Features
 
 - 🚀 **PostGraphile 5** - Next-generation GraphQL API from your PostgreSQL schema
