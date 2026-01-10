@@ -2,9 +2,8 @@ import { IncomingMessage } from 'http';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 
+import { env } from '../config/config';
 import { logger } from './logger';
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 interface RequestWithBody extends IncomingMessage {
     body?: { operationName?: string };
@@ -42,7 +41,7 @@ export const gqlLogger = pinoHttp({
         ...(isGraphQLRequest(req) && {
             graphql: { operationName: getGraphQLOperationName(req) },
         }),
-        ...(isProduction && {
+        ...(!env.isDevelopment && {
             userAgent: req.headers['user-agent'],
             ip: req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
         }),
