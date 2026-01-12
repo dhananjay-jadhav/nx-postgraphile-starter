@@ -5,3 +5,4 @@
 /.nx/workspace-data
 
 libs/gql/src/lib/schema.graphql
+libs/gql/src/lib/generated

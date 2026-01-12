@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "gql-crud",
+  "title": "Generate GQL CRUD WrapPlans",
+  "description": "Generates WrapPlan stubs for PostGraphile 5 CRUD operations",
+  "type": "object",
+  "properties": {
+    "typeName": {
+      "type": "string",
+      "description": "The GraphQL type name (e.g., User, BlogPost)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What is the GraphQL type name?"
+    },
+    "libName": {
+      "type": "string",
+      "description": "Target library name under libs/",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      }
+    }
+  },
+  "required": ["typeName"]
+}

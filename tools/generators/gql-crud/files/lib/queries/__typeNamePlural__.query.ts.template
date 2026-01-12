@@ -1,0 +1,72 @@
+/**
+ * WrapPlan: <%= operations.queryConnection.fieldName %> Query
+ * 
+ * Intercepts Query.<%= operations.queryConnection.fieldName %> - fetches paginated connection of <%= typeNamePlural %>.
+ * 
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import type { ExecutableStep, FieldArgs, FieldInfo, ConnectionStep } from 'grafast';
+import type { <%= typeName %>Connection } from '@app/gql';
+
+/**
+ * WrapPlan function type for Query.<%= operations.queryConnection.fieldName %>
+ */
+export type <%= typeNamePlural %>QueryWrapPlanFn = typeof <%= operations.queryConnection.wrapPlanName %>;
+
+/**
+ * WrapPlan for Query.<%= operations.queryConnection.fieldName %>
+ * 
+ * @param plan - Function to call the original plan resolver
+ * @param $source - The parent step (Query root)
+ * @param fieldArgs - Access arguments: first, last, offset, before, after, condition, orderBy, filter
+ * @param info - Field metadata (rarely needed)
+ * @returns ConnectionStep for the paginated result
+ * 
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { wrapPlans } from 'postgraphile/utils';
+ * import { <%= operations.queryConnection.wrapPlanName %> } from '@app/<%= libName %>';
+ * 
+ * const MyWrapPlansPlugin = wrapPlans({
+ *     Query: {
+ *         <%= operations.queryConnection.fieldName %>: <%= operations.queryConnection.wrapPlanName %>,
+ *     },
+ * });
+ * 
+ * // Add to preset: plugins: [MyWrapPlansPlugin]
+ * ```
+ */
+export function <%= operations.queryConnection.wrapPlanName %>(
+    plan: () => ConnectionStep<<%= typeName %>Connection>,
+    $source: ExecutableStep,
+    fieldArgs: FieldArgs,
+    info: FieldInfo
+): ConnectionStep<<%= typeName %>Connection> {
+    // Access pagination arguments:
+    // const $first = fieldArgs.getRaw('first');
+    // const $last = fieldArgs.getRaw('last');
+    // const $offset = fieldArgs.getRaw('offset');
+    // const $before = fieldArgs.getRaw('before');
+    // const $after = fieldArgs.getRaw('after');
+    // const $condition = fieldArgs.getRaw('condition');
+    // const $orderBy = fieldArgs.getRaw('orderBy');
+    // const $filter = fieldArgs.getRaw('filter');
+    
+    // Add your custom logic here:
+    // - Additional filtering
+    // - Permission-based filters
+    // - Audit logging
+    // - Analytics tracking
+    //
+    // Example: Log pagination info
+    // import { sideEffect, list } from 'grafast';
+    // const $first = fieldArgs.getRaw('first');
+    // sideEffect($first, (first) => {
+    //     console.log('Fetching <%= typeNamePlural %> with first:', first);
+    // });
+    
+    // Call original plan and return result
+    return plan();
+}

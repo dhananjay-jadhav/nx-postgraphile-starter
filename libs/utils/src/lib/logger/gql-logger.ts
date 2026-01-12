@@ -1,4 +1,14 @@
-import { IncomingMessage } from 'http';
+/**
+ * Route Logging Filter
+ *
+ * Conditionally skips pino-http's automatic request logging for specific routes.
+ * This reduces log noise for high-frequency or specially-handled endpoints.
+ *
+ * @module
+ */
+import { IncomingMessage } from 'node:http';
+
+import { NextFunction, Request, Response } from 'express';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 
@@ -17,6 +27,33 @@ const getGraphQLOperationName = (req: RequestWithBody): string | undefined => {
 const isGraphQLRequest = (req: IncomingMessage): boolean => {
     const url = req.url || '';
     return url.includes('/graphql') || url.includes('/graphiql');
+};
+
+/**
+ * Routes to skip from pino-http's automatic request logging:
+ * - GraphQL: LoggingPlugin handles with operation details and timing
+ * - Health endpoints: High-frequency probes we don't need to log
+ *
+ * @see libs/gql/src/lib/plugins/logging.plugin.ts for GraphQL operation logging
+ */
+const SKIP_LOGGING_PATTERNS = ['/graphql', '/graphiql', '/health', '/ready', '/live'];
+
+const shouldSkipLogging = (url: string): boolean => SKIP_LOGGING_PATTERNS.some((pattern) => url.includes(pattern));
+
+/**
+ * Express middleware to conditionally skip automatic request logging.
+ *
+ * pino-http automatically logs all requests. This middleware sets a flag
+ * that pino-http's autoLogging.ignore can check.
+ *
+ * Usage: app.use(skipRouteLogging);
+ */
+export const skipRouteLogging = (req: Request, _res: Response, next: NextFunction): void => {
+    if (shouldSkipLogging(req.url || '')) {
+        // Set flag for pino-http's autoLogging.ignore to check
+        (req as Request & { skipLogging?: boolean }).skipLogging = true;
+    }
+    next();
 };
 
 export const gqlLogger = pinoHttp({
@@ -63,7 +100,8 @@ export const gqlLogger = pinoHttp({
     autoLogging: {
         ignore: req => {
             const url = req.url || '';
-            return url.includes('/health') || url.includes('/ready') || url.includes('/live');
+            // Skip health checks and GraphQL (LoggingPlugin handles GraphQL logging)
+            return shouldSkipLogging(url) || (req as Request & { skipLogging?: boolean }).skipLogging === true;
         },
     },
 });

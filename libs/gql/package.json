@@ -15,11 +15,13 @@
         }
     },
     "dependencies": {
-        "@app/database": "0.0.1",
         "@app/utils": "0.0.1",
-        "@graphile/simplify-inflection": "^8.0.0-rc.2",
         "@graphql-codegen/cli": "^5.0.3",
-        "postgraphile": "^5.0.0-rc.3",
+        "express": "^4.21.2",
+        "grafast": "1.0.0-rc.3",
+        "grafserv": "^1.0.0-rc.3",
+        "graphql": "^16.9.0",
+        "pino": "^10.1.0",
         "tslib": "^2.3.0"
     }
 }

@@ -1,0 +1,75 @@
+/**
+ * <%= typeName %> API - WrapPlans Library
+ *
+ * Provides typed wrapPlan functions for <%= typeName %><% if (includeQueries && includeMutations) { %> queries and mutations<% } else if (includeQueries) { %> queries<% } else { %> mutations<% } %>.
+ *
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { <%= typeName %>WrapPlansPlugin } from '@app/<%= libName %>';
+ *
+ * export const preset: GraphileConfig.Preset = {
+ *     plugins: [LoggingPlugin, <%= typeName %>WrapPlansPlugin],
+ *     // ...
+ * };
+ * ```
+ *
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import { wrapPlans } from 'postgraphile/utils';
+<% if (includeQueries) { -%>
+import { <%= operations.query.wrapPlanName %> } from './lib/queries/<%= typeNameLower %>.query.js';
+import { <%= operations.queryById.wrapPlanName %> } from './lib/queries/<%= typeNameLower %>-by-id.query.js';
+import { <%= operations.queryConnection.wrapPlanName %> } from './lib/queries/<%= typeNamePlural %>.query.js';
+<% } -%>
+<% if (includeMutations) { -%>
+import { <%= operations.create.wrapPlanName %> } from './lib/mutations/create-<%= typeNameLower %>.mutation.js';
+import { <%= operations.update.wrapPlanName %> } from './lib/mutations/update-<%= typeNameLower %>.mutation.js';
+import { <%= operations.updateById.wrapPlanName %> } from './lib/mutations/update-<%= typeNameLower %>-by-id.mutation.js';
+import { <%= operations.delete.wrapPlanName %> } from './lib/mutations/delete-<%= typeNameLower %>.mutation.js';
+import { <%= operations.deleteById.wrapPlanName %> } from './lib/mutations/delete-<%= typeNameLower %>-by-id.mutation.js';
+<% } -%>
+
+/**
+ * <%= typeName %> WrapPlans Plugin
+ *
+ * Pre-configured plugin that wraps all <%= typeName %> CRUD operations.
+ * Add custom logic in the individual wrapPlan functions for:
+ * - Permission checks
+ * - Input validation
+ * - Audit logging
+ * - Side effects (notifications, cache invalidation)
+ */
+export const <%= typeName %>WrapPlansPlugin = wrapPlans({
+<% if (includeQueries) { -%>
+    Query: {
+        <%= operations.query.fieldName %>: <%= operations.query.wrapPlanName %>,
+        <%= operations.queryById.fieldName %>: <%= operations.queryById.wrapPlanName %>,
+        <%= operations.queryConnection.fieldName %>: <%= operations.queryConnection.wrapPlanName %>,
+    },
+<% } -%>
+<% if (includeMutations) { -%>
+    Mutation: {
+        <%= operations.create.fieldName %>: <%= operations.create.wrapPlanName %>,
+        <%= operations.update.fieldName %>: <%= operations.update.wrapPlanName %>,
+        <%= operations.updateById.fieldName %>: <%= operations.updateById.wrapPlanName %>,
+        <%= operations.delete.fieldName %>: <%= operations.delete.wrapPlanName %>,
+        <%= operations.deleteById.fieldName %>: <%= operations.deleteById.wrapPlanName %>,
+    },
+<% } -%>
+});
+<% if (includeQueries) { %>
+// Query wrapPlans (re-export for individual use)
+export { <%= operations.query.wrapPlanName %> } from './lib/queries/<%= typeNameLower %>.query.js';
+export { <%= operations.queryById.wrapPlanName %> } from './lib/queries/<%= typeNameLower %>-by-id.query.js';
+export { <%= operations.queryConnection.wrapPlanName %> } from './lib/queries/<%= typeNamePlural %>.query.js';
+<% } -%>
+<% if (includeMutations) { %>
+// Mutation wrapPlans (re-export for individual use)
+export { <%= operations.create.wrapPlanName %> } from './lib/mutations/create-<%= typeNameLower %>.mutation.js';
+export { <%= operations.update.wrapPlanName %> } from './lib/mutations/update-<%= typeNameLower %>.mutation.js';
+export { <%= operations.updateById.wrapPlanName %> } from './lib/mutations/update-<%= typeNameLower %>-by-id.mutation.js';
+export { <%= operations.delete.wrapPlanName %> } from './lib/mutations/delete-<%= typeNameLower %>.mutation.js';
+export { <%= operations.deleteById.wrapPlanName %> } from './lib/mutations/delete-<%= typeNameLower %>-by-id.mutation.js';
+<% } -%>

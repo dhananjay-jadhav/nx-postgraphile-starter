@@ -10,6 +10,7 @@ const envSchema = Joi.object({
     APP_NAME: Joi.string().default('postgraphile-api'),
     LOG_LEVEL: Joi.string().valid('trace', 'debug', 'info', 'warn', 'error', 'fatal').default('info'),
     SHUTDOWN_TIMEOUT: Joi.number().min(1000).default(10000),
+    KEEP_ALIVE_TIMEOUT: Joi.number().min(1000).default(65000),
 
     // Database
     DATABASE_URL: Joi.string()
@@ -27,6 +28,14 @@ const envSchema = Joi.object({
 
     // Security
     JWT_SECRET: Joi.string().allow('').default(''),
+
+    // Rate Limiting
+    RATE_LIMIT_MAX: Joi.number().min(1).default(100),
+    RATE_LIMIT_WINDOW_MS: Joi.number().min(1000).default(60000), // 1 minute
+
+    // GraphQL Security
+    GRAPHQL_DEPTH_LIMIT: Joi.number().min(1).default(10),
+    GRAPHQL_COST_LIMIT: Joi.number().min(1).default(1000),
 })
     .unknown(true)
     .options({ abortEarly: false });
@@ -37,6 +46,7 @@ export interface EnvConfig {
     APP_NAME: string;
     LOG_LEVEL: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
     SHUTDOWN_TIMEOUT: number;
+    KEEP_ALIVE_TIMEOUT: number;
     DATABASE_URL: string;
     DATABASE_SCHEMAS: string;
     DATABASE_POOL_MAX: number;
@@ -48,6 +58,10 @@ export interface EnvConfig {
     DATABASE_SSL: boolean;
     DATABASE_SSL_REJECT_UNAUTHORIZED: boolean;
     JWT_SECRET: string;
+    RATE_LIMIT_MAX: number;
+    RATE_LIMIT_WINDOW_MS: number;
+    GRAPHQL_DEPTH_LIMIT: number;
+    GRAPHQL_COST_LIMIT: number;
     isProduction: boolean;
     isDevelopment: boolean;
     isTest: boolean;
@@ -85,5 +99,3 @@ export function getDatabaseSchemas(): string[] {
         .map(s => s.trim())
         .filter(Boolean);
 }
-
-export { Joi };
