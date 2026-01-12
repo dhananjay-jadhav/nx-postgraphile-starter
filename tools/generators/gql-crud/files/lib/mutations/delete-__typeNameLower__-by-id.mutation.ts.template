@@ -1,0 +1,66 @@
+/**
+ * WrapPlan: <%= operations.deleteById.fieldName %> Mutation
+ * 
+ * Intercepts Mutation.<%= operations.deleteById.fieldName %> - deletes an existing <%= typeName %> by global ID.
+ * 
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import type { ExecutableStep, FieldArgs, FieldInfo } from 'grafast';
+import type { <%= operations.deleteById.payloadType %> } from '@app/gql';
+
+/**
+ * WrapPlan function type for Mutation.<%= operations.deleteById.fieldName %>
+ */
+export type <%= operations.deleteById.fieldNamePascal %>MutationWrapPlanFn = typeof <%= operations.deleteById.wrapPlanName %>;
+
+/**
+ * WrapPlan for Mutation.<%= operations.deleteById.fieldName %>
+ * 
+ * @param plan - Function to call the original plan resolver
+ * @param $source - The parent step (Mutation root)
+ * @param fieldArgs - Access arguments via fieldArgs.getRaw('input')
+ * @param info - Field metadata (rarely needed)
+ * @returns ExecutableStep for the mutation result
+ * 
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { wrapPlans } from 'postgraphile/utils';
+ * import { <%= operations.deleteById.wrapPlanName %> } from '@app/<%= libName %>';
+ * 
+ * const MyWrapPlansPlugin = wrapPlans({
+ *     Mutation: {
+ *         <%= operations.deleteById.fieldName %>: <%= operations.deleteById.wrapPlanName %>,
+ *     },
+ * });
+ * 
+ * // Add to preset: plugins: [MyWrapPlansPlugin]
+ * ```
+ */
+export function <%= operations.deleteById.wrapPlanName %>(
+    plan: () => ExecutableStep<<%= operations.deleteById.payloadType %>>,
+    $source: ExecutableStep,
+    fieldArgs: FieldArgs,
+    info: FieldInfo
+): ExecutableStep<<%= operations.deleteById.payloadType %>> {
+    // Access the input argument:
+    // const $input = fieldArgs.getRaw('input');
+    // Input contains: id (global ID)
+    
+    // Add your custom logic here:
+    // - Permission checks (can user delete this record?)
+    // - Soft delete logic (update status instead of hard delete)
+    // - Audit logging
+    // - Post-delete side effects (cleanup, notifications, cache invalidation)
+    //
+    // Example: Log deletion by ID
+    // import { sideEffect, access } from 'grafast';
+    // const $input = fieldArgs.getRaw('input');
+    // sideEffect($input, (input) => {
+    //     console.log('Deleting <%= typeName %> by ID:', input?.id);
+    // });
+    
+    // Call original plan and return result
+    return plan();
+}

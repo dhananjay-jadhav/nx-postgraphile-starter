@@ -19,6 +19,10 @@ A production-ready [PostGraphile 5](https://grafast.org/postgraphile/) GraphQL A
 - 🏊 **Connection Pooling** - Optimized pg Pool configuration for production
 - 🧪 **Testing** - Jest-based unit and e2e testing
 - 🤖 **GraphQL Codegen** - Type generation for your GraphQL schema
+- 🛡️ **Rate Limiting** - Express rate limiting with configurable limits
+- 🔐 **GraphQL Security** - Query depth and cost limiting to prevent abuse
+- 📊 **GraphQL Logging Plugin** - Structured logging with trace IDs for all operations
+- 🛠️ **Code Generation** - WrapPlan stub generator for custom CRUD logic
 
 ## Project Structure
 
@@ -154,18 +158,24 @@ See [performance/README.md](performance/README.md) for detailed documentation.
 
 ## Environment Variables
 
-| Variable            | Description                          | Default                                                |
-| ------------------- | ------------------------------------ | ------------------------------------------------------ |
-| `NODE_ENV`          | Environment (development/production) | `development`                                          |
-| `PORT`              | Server port                          | `3000`                                                 |
-| `APP_NAME`          | Application name for logging         | `postgraphile-api`                                     |
-| `LOG_LEVEL`         | Logging level                        | `info`                                                 |
-| `DATABASE_URL`      | PostgreSQL connection string         | `postgres://postgres:postgres@localhost:5432/postgres` |
-| `DATABASE_SCHEMAS`  | Comma-separated schema names         | `public`                                               |
-| `DATABASE_POOL_MAX` | Maximum pool connections             | `20`                                                   |
-| `DATABASE_POOL_MIN` | Minimum pool connections             | `2`                                                    |
-| `DATABASE_SSL`      | Enable SSL connection                | `false`                                                |
-| `JWT_SECRET`        | Secret for JWT authentication        | - assword                                              |
+| Variable              | Description                          | Default                                                |
+| --------------------- | ------------------------------------ | ------------------------------------------------------ |
+| `NODE_ENV`            | Environment (development/production) | `development`                                          |
+| `PORT`                | Server port                          | `3000`                                                 |
+| `APP_NAME`            | Application name for logging         | `postgraphile-api`                                     |
+| `LOG_LEVEL`           | Logging level                        | `info`                                                 |
+| `DATABASE_URL`        | PostgreSQL connection string         | `postgres://postgres:postgres@localhost:5432/postgres` |
+| `DATABASE_SCHEMAS`    | Comma-separated schema names         | `public`                                               |
+| `DATABASE_POOL_MAX`   | Maximum pool connections             | `20`                                                   |
+| `DATABASE_POOL_MIN`   | Minimum pool connections             | `2`                                                    |
+| `DATABASE_SSL`        | Enable SSL connection                | `false`                                                |
+| `JWT_SECRET`          | Secret for JWT authentication        | -                                                      |
+| `RATE_LIMIT_MAX`      | Max requests per window              | `100`                                                  |
+| `RATE_LIMIT_WINDOW_MS`| Rate limit window in milliseconds    | `60000`                                                |
+| `GRAPHQL_DEPTH_LIMIT` | Maximum GraphQL query depth          | `10`                                                   |
+| `GRAPHQL_COST_LIMIT`  | Maximum GraphQL query cost           | `1000`                                                 |
+| `SHUTDOWN_TIMEOUT`    | Graceful shutdown timeout (ms)       | `10000`                                                |
+| `KEEP_ALIVE_TIMEOUT`  | HTTP keep-alive timeout (ms)         | `65000`                                                |
 
 ## Libraries
 

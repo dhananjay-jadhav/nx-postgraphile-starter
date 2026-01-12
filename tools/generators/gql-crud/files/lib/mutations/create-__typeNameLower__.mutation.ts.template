@@ -1,0 +1,65 @@
+/**
+ * WrapPlan: <%= operations.create.fieldName %> Mutation
+ * 
+ * Intercepts Mutation.<%= operations.create.fieldName %> - creates a new <%= typeName %>.
+ * 
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import type { ExecutableStep, FieldArgs, FieldInfo } from 'grafast';
+import type { <%= operations.create.payloadType %> } from '@app/gql';
+
+/**
+ * WrapPlan function type for Mutation.<%= operations.create.fieldName %>
+ */
+export type <%= operations.create.fieldNamePascal %>MutationWrapPlanFn = typeof <%= operations.create.wrapPlanName %>;
+
+/**
+ * WrapPlan for Mutation.<%= operations.create.fieldName %>
+ * 
+ * @param plan - Function to call the original plan resolver
+ * @param $source - The parent step (Mutation root)
+ * @param fieldArgs - Access arguments via fieldArgs.getRaw('input')
+ * @param info - Field metadata (rarely needed)
+ * @returns ExecutableStep for the mutation result
+ * 
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { wrapPlans } from 'postgraphile/utils';
+ * import { <%= operations.create.wrapPlanName %> } from '@app/<%= libName %>';
+ * 
+ * const MyWrapPlansPlugin = wrapPlans({
+ *     Mutation: {
+ *         <%= operations.create.fieldName %>: <%= operations.create.wrapPlanName %>,
+ *     },
+ * });
+ * 
+ * // Add to preset: plugins: [MyWrapPlansPlugin]
+ * ```
+ */
+export function <%= operations.create.wrapPlanName %>(
+    plan: () => ExecutableStep<<%= operations.create.payloadType %>>,
+    $source: ExecutableStep,
+    fieldArgs: FieldArgs,
+    info: FieldInfo
+): ExecutableStep<<%= operations.create.payloadType %>> {
+    // Access the input argument:
+    // const $input = fieldArgs.getRaw('input');
+    
+    // Add your custom logic here:
+    // - Input validation/transformation
+    // - Permission checks
+    // - Audit logging
+    // - Post-creation side effects (notifications, cache invalidation)
+    //
+    // Example: Log creation
+    // import { sideEffect, access } from 'grafast';
+    // const $input = fieldArgs.getRaw('input');
+    // sideEffect($input, (input) => {
+    //     console.log('Creating <%= typeName %>:', input);
+    // });
+    
+    // Call original plan and return result
+    return plan();
+}

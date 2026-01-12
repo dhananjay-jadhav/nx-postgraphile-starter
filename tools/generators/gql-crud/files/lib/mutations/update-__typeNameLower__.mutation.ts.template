@@ -1,0 +1,66 @@
+/**
+ * WrapPlan: <%= operations.update.fieldName %> Mutation
+ * 
+ * Intercepts Mutation.<%= operations.update.fieldName %> - updates an existing <%= typeName %> by rowId.
+ * 
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import type { ExecutableStep, FieldArgs, FieldInfo } from 'grafast';
+import type { <%= operations.update.payloadType %> } from '@app/gql';
+
+/**
+ * WrapPlan function type for Mutation.<%= operations.update.fieldName %>
+ */
+export type <%= operations.update.fieldNamePascal %>MutationWrapPlanFn = typeof <%= operations.update.wrapPlanName %>;
+
+/**
+ * WrapPlan for Mutation.<%= operations.update.fieldName %>
+ * 
+ * @param plan - Function to call the original plan resolver
+ * @param $source - The parent step (Mutation root)
+ * @param fieldArgs - Access arguments via fieldArgs.getRaw('input')
+ * @param info - Field metadata (rarely needed)
+ * @returns ExecutableStep for the mutation result
+ * 
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { wrapPlans } from 'postgraphile/utils';
+ * import { <%= operations.update.wrapPlanName %> } from '@app/<%= libName %>';
+ * 
+ * const MyWrapPlansPlugin = wrapPlans({
+ *     Mutation: {
+ *         <%= operations.update.fieldName %>: <%= operations.update.wrapPlanName %>,
+ *     },
+ * });
+ * 
+ * // Add to preset: plugins: [MyWrapPlansPlugin]
+ * ```
+ */
+export function <%= operations.update.wrapPlanName %>(
+    plan: () => ExecutableStep<<%= operations.update.payloadType %>>,
+    $source: ExecutableStep,
+    fieldArgs: FieldArgs,
+    info: FieldInfo
+): ExecutableStep<<%= operations.update.payloadType %>> {
+    // Access the input argument:
+    // const $input = fieldArgs.getRaw('input');
+    // Input contains: rowId + patch (partial update fields)
+    
+    // Add your custom logic here:
+    // - Input validation/transformation
+    // - Permission checks (can user update this record?)
+    // - Audit logging
+    // - Post-update side effects (notifications, cache invalidation)
+    //
+    // Example: Log update
+    // import { sideEffect, access } from 'grafast';
+    // const $input = fieldArgs.getRaw('input');
+    // sideEffect($input, (input) => {
+    //     console.log('Updating <%= typeName %> by rowId:', input?.rowId);
+    // });
+    
+    // Call original plan and return result
+    return plan();
+}

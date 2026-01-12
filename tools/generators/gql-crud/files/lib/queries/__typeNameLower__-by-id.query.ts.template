@@ -1,0 +1,66 @@
+/**
+ * WrapPlan: <%= operations.queryById.fieldName %> Query
+ * 
+ * Intercepts Query.<%= operations.queryById.fieldName %> - fetches single <%= typeName %> by global ID.
+ * 
+ * @see https://grafast.org/grafast/step-library - Available step functions
+ * @see https://postgraphile.org/postgraphile/next/migrating-from-v4/make-wrap-resolvers-plugin - wrapPlans docs
+ */
+import type { ExecutableStep, FieldArgs, FieldInfo } from 'grafast';
+import type { <%= typeName %> } from '@app/gql';
+
+/**
+ * WrapPlan function type for Query.<%= operations.queryById.fieldName %>
+ */
+export type <%= typeName %>ByIdQueryWrapPlanFn = typeof <%= operations.queryById.wrapPlanName %>;
+
+/**
+ * WrapPlan for Query.<%= operations.queryById.fieldName %>
+ * 
+ * @param plan - Function to call the original plan resolver
+ * @param $source - The parent step (Query root)
+ * @param fieldArgs - Access arguments via fieldArgs.getRaw('id') or destructure { $id }
+ * @param info - Field metadata (rarely needed)
+ * @returns ExecutableStep for the field result
+ * 
+ * @example
+ * ```typescript
+ * // apps/api/src/server/graphile.config.ts
+ * import { wrapPlans } from 'postgraphile/utils';
+ * import { <%= operations.queryById.wrapPlanName %> } from '@app/<%= libName %>';
+ * 
+ * const MyWrapPlansPlugin = wrapPlans({
+ *     Query: {
+ *         <%= operations.queryById.fieldName %>: <%= operations.queryById.wrapPlanName %>,
+ *     },
+ * });
+ * 
+ * // Add to preset: plugins: [MyWrapPlansPlugin]
+ * ```
+ */
+export function <%= operations.queryById.wrapPlanName %>(
+    plan: () => ExecutableStep<<%= operations.queryById.payloadType %>>,
+    $source: ExecutableStep,
+    fieldArgs: FieldArgs,
+    info: FieldInfo
+): ExecutableStep<<%= operations.queryById.payloadType %>> {
+    // Access arguments:
+    // const $id = fieldArgs.getRaw('id');
+    // Or destructure: const { $id } = fieldArgs;
+    
+    // Add your custom logic here:
+    // - Input validation
+    // - Permission checks  
+    // - Audit logging
+    // - Side effects (notifications, cache invalidation)
+    //
+    // Example: Access logger from context
+    // import { context, sideEffect } from 'grafast';
+    // const $id = fieldArgs.getRaw('id');
+    // sideEffect($id, (id) => {
+    //     console.log('Fetching <%= typeName %> by ID:', id);
+    // });
+    
+    // Call original plan and return result
+    return plan();
+}

@@ -25,6 +25,7 @@
         "db:status": "node scripts/db-migrate.js status",
         "gen:app": "node scripts/generate-app.js",
         "gen:lib": "node scripts/generate-lib.js",
+        "gen:gql-crud": "node scripts/generate-gql-crud.js",
         "perf:test": "ts-node --project performance/tsconfig.json performance/src/cli.ts",
         "perf:list": "ts-node --project performance/tsconfig.json performance/src/cli.ts --list",
         "perf:rest": "ts-node --project performance/tsconfig.json performance/src/cli.ts --category=rest",
@@ -40,6 +41,7 @@
         "compression": "^1.7.4",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "express": "^4.21.2",
+        "express-rate-limit": "^7.5.0",
         "grafserv": "^1.0.0-rc.3",
         "graphql": "^16.9.0",
         "helmet": "^8.1.0",
@@ -102,7 +104,8 @@
         "apps/*",
         "libs/utils",
         "libs/database",
-        "libs/gql"
+        "libs/gql",
+        "libs/*"
     ],
     "packageManager": "yarn@4.12.0"
 }
