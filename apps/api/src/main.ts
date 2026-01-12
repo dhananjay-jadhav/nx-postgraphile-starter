@@ -17,6 +17,8 @@ async function startServer(): Promise<void> {
     const app: Express = express();
     const server = createServer(app);
 
+    server.keepAliveTimeout = env.KEEP_ALIVE_TIMEOUT || 65000;
+
     // Handle server errors
     server.on('error', (error: Error) => {
         logger.error({ error }, 'Server error');
